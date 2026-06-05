@@ -1,6 +1,6 @@
 # SUS + SMS Platform
 
-Production-grade demo for the Stanbic-X Unified Stablecoin account and Stanbic-X Money Structure allocation engine.
+Production-grade demo for the Stanbic-X Unified Stablecoin account and Stanbic-X Money Structure allocation engine production grade
 
 ## What is included
 
