@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for contracts/SMSCore.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">contracts/</a> SMSCore.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">18.18% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>2/11</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">5.56% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>1/18</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/8</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">15% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>3/20</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+&nbsp;
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
+&nbsp;
+contract SMSCore is Ownable, Pausable {
+    using SafeERC20 for IERC20;
+&nbsp;
+    mapping(address =&gt; bool) private supportedStablecoins;
+    mapping(address =&gt; mapping(address =&gt; uint256)) private allocatedBalances;
+&nbsp;
+    address public immutable inputStablecoin;
+    address private immutable self;
+    bool private reentrancyLock;
+&nbsp;
+    event Allocated(address indexed user, uint256 amount, address inputStablecoin, address outputStablecoin);
+    event ReentrancyAttemptDetected(address indexed user, bytes4 selector);
+&nbsp;
+    error UnsupportedStablecoin(address stablecoin);
+    error DelegatecallBlocked();
+    error ReentrancyBlocked();
+&nbsp;
+<span class="fstat-no" title="function not covered" >    constructor(address initialInputStablecoin, address[] memory outputStablecoins, address initialOwner) Ownable(initialOwner) {</span>
+        inputStablecoin = initialInputStablecoin;
+        self = address(this);
+        for (uint256 i = 0; i &lt; outputStablecoins.length; i++) {
+            supportedStablecoins[outputStablecoins[i]] = true;
+        }
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    modifier noDelegateCall() {</span>
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (address(this) != self) revert DelegatecallBlocked();
+        _;
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    modifier nonReentrantAlert() {</span>
+<span class="cstat-no" title="statement not covered" >        if (reentrancyLock) {</span>
+<span class="cstat-no" title="statement not covered" >            emit ReentrancyAttemptDetected(msg.sender, msg.sig);</span>
+            revert ReentrancyBlocked();
+        }
+        reentrancyLock = true;
+        _;
+        reentrancyLock = false;
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function allocate(address user, uint256 amount, address outputStablecoin)</span>
+        external
+        onlyOwner
+        whenNotPaused
+        noDelegateCall
+        nonReentrantAlert
+    {
+<span class="cstat-no" title="statement not covered" >        if (!supportedStablecoins[outputStablecoin]) revert UnsupportedStablecoin(outputStablecoin);</span>
+        allocatedBalances[user][outputStablecoin] += amount;
+<span class="cstat-no" title="statement not covered" >        IERC20(outputStablecoin).safeTransfer(user, amount)</span>;
+<span class="cstat-no" title="statement not covered" >        emit Allocated(user, amount, inputStablecoin, outputStablecoin);</span>
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function getAllocatedBalance(address user, address stablecoin) external view returns (uint256) {</span>
+<span class="cstat-no" title="statement not covered" >        return allocatedBalances[user][stablecoin];</span>
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function isStablecoinSupported(address stablecoin) external view returns (bool) {</span>
+<span class="cstat-no" title="statement not covered" >        return supportedStablecoins[stablecoin];</span>
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function pause() external onlyOwner {</span>
+<span class="cstat-no" title="statement not covered" >        _pause()</span>;
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function unpause() external onlyOwner {</span>
+<span class="cstat-no" title="statement not covered" >        _unpause()</span>;
+    }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Fri Jun 05 2026 07:13:54 GMT+0530 (India Standard Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+{
+  "name": "sus-sms-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Stanbic-X Unified Stablecoin and Money Structure demo platform.",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "server": "node backend/src/server.js",
+    "test": "vitest run",
+    "test:contracts": "hardhat test",
+    "coverage:contracts": "hardhat coverage --testfiles \"blockchain/test/**/*.js\" && node blockchain/scripts/check-coverage.js",
+    "prisma:generate": "prisma generate"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.2",
+    "@prisma/client": "^5.22.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "ethers": "^6.13.5",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
+    "lucide-react": "^0.468.0",
+    "prisma": "^5.22.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",
+    "@nomicfoundation/hardhat-ethers": "^3.0.0",
+    "chai": "^4.5.0",
+    "hardhat": "^2.22.17",
+    "jsdom": "^25.0.1",
+    "solidity-coverage": "^0.8.17",
+    "supertest": "^7.0.0",
+    "vitest": "^2.1.8"
+  }
+}
