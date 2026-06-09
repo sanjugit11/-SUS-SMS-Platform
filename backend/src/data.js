@@ -1,6 +1,6 @@
 const chains = [
-  { id: "hoodi", name: "Hoodi", chainId: 560048, role: "Destination primary", endOfLife: "2028-09" },
-  { id: "arbitrum-sepolia", name: "Arbitrum Sepolia", chainId: 421614, role: "Deposit / destination alternative", endOfLife: "2026-09" }
+  { id: "hoodi", name: "Hoodi", chainId: 560048, role: "Primary L1 testnet", endOfLife: "2027+" },
+  { id: "base-sepolia", name: "Base Sepolia", chainId: 84532, role: "Secondary L2 testnet", endOfLife: "Stable" }
 ];
 
 const stablecoins = [
@@ -10,30 +10,32 @@ const stablecoins = [
   { symbol: "EURC", name: "Euro Coin", decimals: 6 }
 ];
 
-function createInitialState() {
-  return {
-    susAccounts: new Map([
-      ["demo-user", { userId: "demo-user", principalStablecoin: "USDC", susBalance: 100000, depositChain: "hoodi" }]
-    ]),
-    allocations: new Map(),
-    destinationBalances: new Map([
-      ["demo-user:arbitrum-sepolia:DAI", { userId: "demo-user", chainId: "arbitrum-sepolia", stablecoin: "DAI", balance: 100000 }]
-    ])
-  };
-}
+const superAdmins = [
+  "0xAdmin000000000000000000000000000000000001",
+  "0xAdmin000000000000000000000000000000000002",
+  "0xAdmin000000000000000000000000000000000003"
+];
 
-const state = createInitialState();
-
-function resetState() {
-  const fresh = createInitialState();
-  state.susAccounts = fresh.susAccounts;
-  state.allocations = fresh.allocations;
-  state.destinationBalances = fresh.destinationBalances;
-}
+// Killswitch and Alerts can be kept in-memory since they are global platform state 
+// and the requirements didn't explicitly ask for them to be in the database, 
+// though Admin Actions and Pending Operations go to DB.
+const state = {
+  securityAlerts: [
+    { id: "ALERT-BOOT", level: "info", message: "Security Controller whitelist verified", createdAt: new Date().toISOString() }
+  ],
+  killSwitch: {
+    platformPause: false,
+    emergencyShutdown: false,
+    revokedStxIds: new Set(),
+    frozenImtIds: new Set(),
+    autoShutdown: false,
+    updatedAt: new Date().toISOString()
+  }
+};
 
 module.exports = {
   chains,
-  resetState,
   stablecoins,
+  superAdmins,
   state
 };

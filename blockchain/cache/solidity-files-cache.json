@@ -1,15 +1,15 @@
 {
   "_format": "hh-sol-cache-2",
   "files": {
-    "/data/2026/encrypto/project7/blockchain/contracts/SMSCore.sol": {
-      "lastModificationDate": 1780563328085,
+    "/home/sanjeev/2026/SUS-SMS-Platform/blockchain/contracts/SMSCore.sol": {
+      "lastModificationDate": 1780736534653,
       "contentHash": "4beee8e3edf34543e4762f570ad42d4f",
       "sourceName": "blockchain/contracts/SMSCore.sol",
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
           "optimizer": {
-            "enabled": false,
+            "enabled": true,
             "runs": 200
           },
           "evmVersion": "paris",
@@ -26,9 +26,6 @@
                 "ast"
               ]
             }
-          },
-          "metadata": {
-            "useLiteralContent": false
           }
         }
       },
@@ -45,15 +42,15 @@
         "SMSCore"
       ]
     },
-    "/data/2026/encrypto/project7/node_modules/@openzeppelin/contracts/access/Ownable.sol": {
-      "lastModificationDate": 1780563497339,
+    "/home/sanjeev/2026/SUS-SMS-Platform/node_modules/@openzeppelin/contracts/access/Ownable.sol": {
+      "lastModificationDate": 1780802128342,
       "contentHash": "d3c790edc9ccf808a17c5a6cd13614fd",
       "sourceName": "@openzeppelin/contracts/access/Ownable.sol",
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
           "optimizer": {
-            "enabled": false,
+            "enabled": true,
             "runs": 200
           },
           "evmVersion": "paris",
@@ -70,9 +67,6 @@
                 "ast"
               ]
             }
-          },
-          "metadata": {
-            "useLiteralContent": false
           }
         }
       },
@@ -86,15 +80,15 @@
         "Ownable"
       ]
     },
-    "/data/2026/encrypto/project7/node_modules/@openzeppelin/contracts/utils/Pausable.sol": {
-      "lastModificationDate": 1780563497343,
+    "/home/sanjeev/2026/SUS-SMS-Platform/node_modules/@openzeppelin/contracts/utils/Pausable.sol": {
+      "lastModificationDate": 1780802128357,
       "contentHash": "0d47b53e10b1985efbb396f937626279",
       "sourceName": "@openzeppelin/contracts/utils/Pausable.sol",
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
           "optimizer": {
-            "enabled": false,
+            "enabled": true,
             "runs": 200
           },
           "evmVersion": "paris",
@@ -111,9 +105,6 @@
                 "ast"
               ]
             }
-          },
-          "metadata": {
-            "useLiteralContent": false
           }
         }
       },
@@ -127,15 +118,15 @@
         "Pausable"
       ]
     },
-    "/data/2026/encrypto/project7/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": {
-      "lastModificationDate": 1780563497307,
+    "/home/sanjeev/2026/SUS-SMS-Platform/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": {
+      "lastModificationDate": 1780802128253,
       "contentHash": "9261adf6457863de3e9892f51317ec89",
       "sourceName": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
           "optimizer": {
-            "enabled": false,
+            "enabled": true,
             "runs": 200
           },
           "evmVersion": "paris",
@@ -152,9 +143,6 @@
                 "ast"
               ]
             }
-          },
-          "metadata": {
-            "useLiteralContent": false
           }
         }
       },
@@ -166,15 +154,15 @@
         "IERC20"
       ]
     },
-    "/data/2026/encrypto/project7/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol": {
-      "lastModificationDate": 1780563497351,
+    "/home/sanjeev/2026/SUS-SMS-Platform/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol": {
+      "lastModificationDate": 1780802128407,
       "contentHash": "bf8e9c3398d381dc66c5302267927386",
       "sourceName": "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
           "optimizer": {
-            "enabled": false,
+            "enabled": true,
             "runs": 200
           },
           "evmVersion": "paris",
@@ -191,9 +179,6 @@
                 "ast"
               ]
             }
-          },
-          "metadata": {
-            "useLiteralContent": false
           }
         }
       },
@@ -208,15 +193,15 @@
         "SafeERC20"
       ]
     },
-    "/data/2026/encrypto/project7/node_modules/@openzeppelin/contracts/utils/Context.sol": {
-      "lastModificationDate": 1780563497067,
+    "/home/sanjeev/2026/SUS-SMS-Platform/node_modules/@openzeppelin/contracts/utils/Context.sol": {
+      "lastModificationDate": 1780802127601,
       "contentHash": "67bfbc07588eb8683b3fd8f6f909563e",
       "sourceName": "@openzeppelin/contracts/utils/Context.sol",
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
           "optimizer": {
-            "enabled": false,
+            "enabled": true,
             "runs": 200
           },
           "evmVersion": "paris",
@@ -233,9 +218,6 @@
                 "ast"
               ]
             }
-          },
-          "metadata": {
-            "useLiteralContent": false
           }
         }
       },
@@ -247,15 +229,15 @@
         "Context"
       ]
     },
-    "/data/2026/encrypto/project7/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol": {
-      "lastModificationDate": 1780563497303,
+    "/home/sanjeev/2026/SUS-SMS-Platform/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol": {
+      "lastModificationDate": 1780802128252,
       "contentHash": "a7fd0f05e36b0d0a21c75340c9c639ec",
       "sourceName": "@openzeppelin/contracts/interfaces/IERC1363.sol",
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
           "optimizer": {
-            "enabled": false,
+            "enabled": true,
             "runs": 200
           },
           "evmVersion": "paris",
@@ -272,9 +254,6 @@
                 "ast"
               ]
             }
-          },
-          "metadata": {
-            "useLiteralContent": false
           }
         }
       },
@@ -289,15 +268,15 @@
         "IERC1363"
       ]
     },
-    "/data/2026/encrypto/project7/node_modules/@openzeppelin/contracts/interfaces/IERC20.sol": {
-      "lastModificationDate": 1780563497307,
+    "/home/sanjeev/2026/SUS-SMS-Platform/node_modules/@openzeppelin/contracts/interfaces/IERC20.sol": {
+      "lastModificationDate": 1780802128253,
       "contentHash": "68620db2da7583d9a4919096ac77f577",
       "sourceName": "@openzeppelin/contracts/interfaces/IERC20.sol",
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
           "optimizer": {
-            "enabled": false,
+            "enabled": true,
             "runs": 200
           },
           "evmVersion": "paris",
@@ -314,9 +293,6 @@
                 "ast"
               ]
             }
-          },
-          "metadata": {
-            "useLiteralContent": false
           }
         }
       },
@@ -328,15 +304,15 @@
       ],
       "artifacts": []
     },
-    "/data/2026/encrypto/project7/node_modules/@openzeppelin/contracts/interfaces/IERC165.sol": {
-      "lastModificationDate": 1780563497303,
+    "/home/sanjeev/2026/SUS-SMS-Platform/node_modules/@openzeppelin/contracts/interfaces/IERC165.sol": {
+      "lastModificationDate": 1780802128252,
       "contentHash": "947853028399b7de34bcc3704ee06e99",
       "sourceName": "@openzeppelin/contracts/interfaces/IERC165.sol",
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
           "optimizer": {
-            "enabled": false,
+            "enabled": true,
             "runs": 200
           },
           "evmVersion": "paris",
@@ -353,9 +329,6 @@
                 "ast"
               ]
             }
-          },
-          "metadata": {
-            "useLiteralContent": false
           }
         }
       },
@@ -367,15 +340,15 @@
       ],
       "artifacts": []
     },
-    "/data/2026/encrypto/project7/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": {
-      "lastModificationDate": 1780563497303,
+    "/home/sanjeev/2026/SUS-SMS-Platform/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": {
+      "lastModificationDate": 1780802128252,
       "contentHash": "7074c93b1ea0a122063f26ddd1db1032",
       "sourceName": "@openzeppelin/contracts/utils/introspection/IERC165.sol",
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
           "optimizer": {
-            "enabled": false,
+            "enabled": true,
             "runs": 200
           },
           "evmVersion": "paris",
@@ -392,9 +365,6 @@
                 "ast"
               ]
             }
-          },
-          "metadata": {
-            "useLiteralContent": false
           }
         }
       },
@@ -406,15 +376,15 @@
         "IERC165"
       ]
     },
-    "/data/2026/encrypto/project7/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol": {
-      "lastModificationDate": 1780563497307,
+    "/home/sanjeev/2026/SUS-SMS-Platform/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol": {
+      "lastModificationDate": 1780802128253,
       "contentHash": "513778b30d2750f5d2b9b19bbcf748a5",
       "sourceName": "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol",
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
           "optimizer": {
-            "enabled": false,
+            "enabled": true,
             "runs": 200
           },
           "evmVersion": "paris",
@@ -431,9 +401,6 @@
                 "ast"
               ]
             }
-          },
-          "metadata": {
-            "useLiteralContent": false
           }
         }
       },
@@ -447,15 +414,15 @@
         "IERC20Metadata"
       ]
     },
-    "/data/2026/encrypto/project7/node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol": {
-      "lastModificationDate": 1780563497199,
+    "/home/sanjeev/2026/SUS-SMS-Platform/node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol": {
+      "lastModificationDate": 1780802128078,
       "contentHash": "d15c4d05583536e080f1960ab282772d",
       "sourceName": "@openzeppelin/contracts/token/ERC20/ERC20.sol",
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
           "optimizer": {
-            "enabled": false,
+            "enabled": true,
             "runs": 200
           },
           "evmVersion": "paris",
@@ -472,9 +439,6 @@
                 "ast"
               ]
             }
-          },
-          "metadata": {
-            "useLiteralContent": false
           }
         }
       },
@@ -491,15 +455,15 @@
         "ERC20"
       ]
     },
-    "/data/2026/encrypto/project7/node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol": {
-      "lastModificationDate": 1780563497091,
+    "/home/sanjeev/2026/SUS-SMS-Platform/node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol": {
+      "lastModificationDate": 1780802127724,
       "contentHash": "bcc76f4747d56c28c40ae272ef3470a6",
       "sourceName": "@openzeppelin/contracts/interfaces/draft-IERC6093.sol",
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
           "optimizer": {
-            "enabled": false,
+            "enabled": true,
             "runs": 200
           },
           "evmVersion": "paris",
@@ -516,9 +480,6 @@
                 "ast"
               ]
             }
-          },
-          "metadata": {
-            "useLiteralContent": false
           }
         }
       },
@@ -532,15 +493,15 @@
         "IERC721Errors"
       ]
     },
-    "/data/2026/encrypto/project7/blockchain/contracts/SUSCore.sol": {
-      "lastModificationDate": 1780563327877,
+    "/home/sanjeev/2026/SUS-SMS-Platform/blockchain/contracts/SUSCore.sol": {
+      "lastModificationDate": 1780736534653,
       "contentHash": "02f61744cabdad482be8f47ece9fd7bb",
       "sourceName": "blockchain/contracts/SUSCore.sol",
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
           "optimizer": {
-            "enabled": false,
+            "enabled": true,
             "runs": 200
           },
           "evmVersion": "paris",
@@ -557,9 +518,6 @@
                 "ast"
               ]
             }
-          },
-          "metadata": {
-            "useLiteralContent": false
           }
         }
       },
@@ -576,95 +534,15 @@
         "SUSCore"
       ]
     },
-    "/data/2026/encrypto/project7/blockchain/contracts/mocks/MockStablecoin.sol": {
-      "lastModificationDate": 1780563328325,
-      "contentHash": "1d02b5e03d4ff0a45134da8f333d431a",
-      "sourceName": "blockchain/contracts/mocks/MockStablecoin.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "evmVersion": "paris",
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "metadata": {
-            "useLiteralContent": false
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts/token/ERC20/ERC20.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.24"
-      ],
-      "artifacts": [
-        "MockStablecoin"
-      ]
-    },
-    "/data/2026/encrypto/project7/blockchain/contracts/mocks/DelegatecallAttacker.sol": {
-      "lastModificationDate": 1780563328457,
-      "contentHash": "e66b4a0524d69aea6798edd6fd54306b",
-      "sourceName": "blockchain/contracts/mocks/DelegatecallAttacker.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "evmVersion": "paris",
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "metadata": {
-            "useLiteralContent": false
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.24"
-      ],
-      "artifacts": [
-        "DelegatecallAttacker"
-      ]
-    },
-    "/data/2026/encrypto/project7/blockchain/contracts/mocks/ReentrantStablecoin.sol": {
-      "lastModificationDate": 1780623695324,
+    "/home/sanjeev/2026/SUS-SMS-Platform/blockchain/contracts/mocks/ReentrantStablecoin.sol": {
+      "lastModificationDate": 1780736534653,
       "contentHash": "4a48e61ee7946b3a1a9305e14da024f1",
       "sourceName": "blockchain/contracts/mocks/ReentrantStablecoin.sol",
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
           "optimizer": {
-            "enabled": false,
+            "enabled": true,
             "runs": 200
           },
           "evmVersion": "paris",
@@ -681,9 +559,6 @@
                 "ast"
               ]
             }
-          },
-          "metadata": {
-            "useLiteralContent": false
           }
         }
       },
@@ -697,6 +572,80 @@
         "ISMSCoreReentryTarget",
         "ISUSCoreReentryTarget",
         "ReentrantStablecoin"
+      ]
+    },
+    "/home/sanjeev/2026/SUS-SMS-Platform/blockchain/contracts/mocks/MockStablecoin.sol": {
+      "lastModificationDate": 1780736534653,
+      "contentHash": "1d02b5e03d4ff0a45134da8f333d431a",
+      "sourceName": "blockchain/contracts/mocks/MockStablecoin.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/token/ERC20/ERC20.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "MockStablecoin"
+      ]
+    },
+    "/home/sanjeev/2026/SUS-SMS-Platform/blockchain/contracts/mocks/DelegatecallAttacker.sol": {
+      "lastModificationDate": 1780736534653,
+      "contentHash": "e66b4a0524d69aea6798edd6fd54306b",
+      "sourceName": "blockchain/contracts/mocks/DelegatecallAttacker.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "DelegatecallAttacker"
       ]
     }
   }

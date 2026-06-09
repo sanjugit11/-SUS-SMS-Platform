@@ -1,27 +1,83 @@
-# SUS + SMS Platform
+# SUS-SMS Platform
 
-Production-grade demo for the Stanbic-X Unified Stablecoin account and Stanbic-X Money Structure allocation engine production grade
+Stanbic-X Unified Stablecoin and Money Structure (SUS-SMS) platform demonstration.
 
-## What is included
+## Prerequisites
 
-- React dashboard with Context API and ethers MetaMask wallet connection
-- Express API with validation, rate limiting, security headers, and ACX allocation simulation
-- Prisma schema for PostgreSQL tables required by the brief
-- Solidity 0.8.x contracts for SUS Core, SMS Core, mock stablecoins, and a delegatecall attacker test fixture
-- Hardhat and Vitest test suites
-- AI Usage Log template for documenting required model usage
+- Node.js 18+
+- PostgreSQL
+- MetaMask (or another EVM wallet)
 
-## Quick start
+## Setup
 
-```bash
-npm install
-npm run build
-npm run server
-npm run dev
-```
+1. **Environment Variables**
+   Ensure you have a valid `.env` file at the root. You need a PostgreSQL connection URL:
+   ```bash
+   DATABASE_URL="postgresql://user:password@localhost:5432/sus_sms?schema=public"
+   ```
 
-Copy `.env.example` to `.env` and set `DATABASE_URL`, `INFURA_API_KEY`, and `PRIVATE_KEY` before deploying contracts.
+2. **Install Dependencies**
+   ```bash
+   npm install
+   ```
 
-## Supported flow
+3. **Database Initialization**
+   Apply the Prisma schema to your PostgreSQL database:
+   ```bash
+   npx prisma db push
+   npx prisma generate
+   ```
 
-The app demonstrates Hoodi to Arbitrum Sepolia as the primary workflow and Arbitrum Sepolia to Hoodi as the alternative workflow. The ACX engine uses a 1:1 stablecoin exchange rate, no fees, no bridge, and simulated 1-2 block completion.
+## Running the Application
+
+Start the backend and frontend simultaneously:
+
+1. **Backend Server** (Terminal 1)
+   ```bash
+   npm run server
+   ```
+   *Runs on http://localhost:4000*
+
+2. **Frontend App** (Terminal 2)
+   ```bash
+   npm run dev
+   ```
+   *Runs on http://localhost:5173*
+
+## B.11 End-to-End Workflow Demonstration
+
+To test the complete workflow, open the frontend in your browser and follow these steps:
+
+1. **STX Registration**
+   - Click "Connect MetaMask".
+   - You will be prompted to complete STX Registration (mocking biometric and passcode enrollment).
+   - Click "Complete Registration". Your STX-ID and IMT-ID will be generated and associated with your wallet.
+
+2. **Deposit**
+   - In the "SUS Dashboard", choose a "Deposit chain" (Hoodi) and a "Principal stablecoin" (e.g., USDC).
+   - Enter an amount (e.g., 100,000) and click "Deposit".
+   - Your SUS balance will update to reflect the deposit.
+
+3. **Allocate Cross-Chain**
+   - In the "Allocation Interface", select "Base Sepolia" as the destination.
+   - Select "DAI" as the output stablecoin.
+   - Enter an allocation amount and click "Allocate through ACX".
+   - The allocation status will show as `settling` and then update to `completed`.
+
+4. **Verify Destination Balance**
+   - Check the "Destination Balances" section.
+   - You will see your DAI balance on Base Sepolia updated to the allocated amount.
+
+5. **Withdraw**
+   - In the "SUS Dashboard", click the "Withdraw" button (using the same amount input field).
+   - Your SUS principal balance will decrease.
+
+6. **Kill Switch & 3-of-3 Approval**
+   - In the "Super Admin Controls" -> "Admin Dashboard", click "Activate Kill Switch (Pause)".
+   - The platform will pause (verified in the "Security Dashboard").
+   - A new pending operation for `kill_switch_deactivation` will appear in the Admin Dashboard.
+   - Click "Approve" (simulating an admin approval). Once 3 approvals are met, the operation will execute, and the kill switch will deactivate.
+
+---
+
+*This is a demonstration for the SUS-SMS Architecture build.*

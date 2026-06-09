@@ -7,19 +7,33 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  stxId             String   @id @map("stx_id")
+  imtId             String   @map("imt_id")
+  walletAddress     String   @map("wallet_address")
+  biometricEnrolled Boolean  @map("biometric_enrolled")
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  susAccount SusAccount?
+
+  @@map("users")
+}
+
 model SusAccount {
-  userId              String   @id @map("user_id")
+  stxId               String   @id @map("stx_id")
   principalStablecoin String   @map("principal_stablecoin")
   susBalance          Decimal  @map("sus_balance")
   createdAt           DateTime @default(now()) @map("created_at")
   updatedAt           DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [stxId], references: [stxId])
 
   @@map("sus_accounts")
 }
 
 model Allocation {
   id               String   @id
-  userId           String   @map("user_id")
+  stxId            String   @map("stx_id")
   amount           Decimal
   sourceChain      String   @map("source_chain")
   destChain        String   @map("dest_chain")
@@ -34,12 +48,33 @@ model Allocation {
 
 model DestinationBalance {
   id         String   @id @default(cuid())
-  userId     String   @map("user_id")
+  stxId      String   @map("stx_id")
   chainId    String   @map("chain_id")
   stablecoin String
   balance    Decimal
   updatedAt  DateTime @updatedAt @map("updated_at")
 
-  @@unique([userId, chainId, stablecoin])
+  @@unique([stxId, chainId, stablecoin])
   @@map("destination_balances")
+}
+
+model PendingOperation {
+  id            String   @id @default(cuid())
+  operationType String   @map("operation_type")
+  details       Json
+  approvals     Json     @default("[]")
+  status        String   @default("pending")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("pending_operations")
+}
+
+model AdminAction {
+  id          String   @id @default(cuid())
+  adminWallet String   @map("admin_wallet")
+  actionType  String   @map("action_type")
+  details     Json
+  timestamp   DateTime @default(now())
+
+  @@map("admin_actions")
 }

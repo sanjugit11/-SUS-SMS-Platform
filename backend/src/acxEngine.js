@@ -1,67 +1,108 @@
 const { randomUUID } = require("crypto");
 const { state } = require("./data");
+const prisma = require("./db");
 
-function balanceKey(userId, chainId, stablecoin) {
-  return `${userId}:${chainId}:${stablecoin}`;
+function balanceKey(stxId, chainId, stablecoin) {
+  return `${stxId}:${chainId}:${stablecoin}`;
 }
 
 function getExchangeRate() {
   return { rate: "1:1", fee: 0 };
 }
 
-function requestAllocation({ userId, amount, sourceChain, destChain, inputStablecoin, outputStablecoin }) {
-  const account = state.susAccounts.get(userId);
-  if (!account || account.susBalance < amount) {
+async function requestAllocation({ stxId, amount, sourceChain, destChain, inputStablecoin, outputStablecoin }) {
+  if (state.killSwitch.platformPause || state.killSwitch.emergencyShutdown) {
+    const error = new Error("Platform is paused");
+    error.status = 423;
+    throw error;
+  }
+
+  const account = await prisma.susAccount.findUnique({ where: { stxId } });
+  if (!account || Number(account.susBalance) < amount) {
     const error = new Error("Insufficient SUS balance");
     error.status = 400;
     throw error;
   }
 
-  account.susBalance -= amount;
-  account.principalStablecoin = inputStablecoin;
-  account.depositChain = sourceChain;
+  // Update SUS account
+  await prisma.susAccount.update({
+    where: { stxId },
+    data: {
+      susBalance: { decrement: amount },
+      principalStablecoin: inputStablecoin,
+    }
+  });
 
   const id = `ACX-${randomUUID().replaceAll("-", "").slice(0, 8).toUpperCase()}`;
   const txHash = `0x${randomUUID().replaceAll("-", "").slice(0, 32)}`;
-  const allocation = {
-    id,
-    userId,
-    amount,
-    sourceChain,
-    destChain,
-    inputStablecoin,
-    outputStablecoin,
-    status: "settling",
-    txHash,
-    createdAt: new Date().toISOString()
-  };
+  
+  const allocation = await prisma.allocation.create({
+    data: {
+      id,
+      stxId,
+      amount,
+      sourceChain,
+      destChain,
+      inputStablecoin,
+      outputStablecoin,
+      status: "settling",
+      txHash
+    }
+  });
 
-  state.allocations.set(id, allocation);
+  // Background process to settle
+  setTimeout(async () => {
+    await prisma.allocation.update({
+      where: { id },
+      data: { status: "completed" }
+    });
 
-  setTimeout(() => {
-    allocation.status = "completed";
-    const key = balanceKey(userId, destChain, outputStablecoin);
-    const existing = state.destinationBalances.get(key) || { userId, chainId: destChain, stablecoin: outputStablecoin, balance: 0 };
-    existing.balance += amount;
-    existing.updatedAt = new Date().toISOString();
-    state.destinationBalances.set(key, existing);
+    // Upsert destination balance
+    const existing = await prisma.destinationBalance.findUnique({
+      where: {
+        stxId_chainId_stablecoin: {
+          stxId,
+          chainId: destChain,
+          stablecoin: outputStablecoin
+        }
+      }
+    });
+
+    if (existing) {
+      await prisma.destinationBalance.update({
+        where: { id: existing.id },
+        data: { balance: { increment: amount } }
+      });
+    } else {
+      await prisma.destinationBalance.create({
+        data: {
+          stxId,
+          chainId: destChain,
+          stablecoin: outputStablecoin,
+          balance: amount
+        }
+      });
+    }
   }, 1200);
 
   return allocation;
 }
 
-function getStatus(id) {
-  return state.allocations.get(id) || null;
+async function getStatus(id) {
+  return await prisma.allocation.findUnique({ where: { id } });
 }
 
-function getDestinationBalances(userId) {
-  return [...state.destinationBalances.values()].filter((balance) => balance.userId === userId);
+async function getDestinationBalances(stxId) {
+  return await prisma.destinationBalance.findMany({
+    where: { stxId }
+  });
 }
 
-function getAllocationHistory(userId) {
-  return [...state.allocations.values()]
-    .filter((allocation) => allocation.userId === userId)
-    .sort((left, right) => right.createdAt.localeCompare(left.createdAt));
+async function getAllocationHistory(stxId) {
+  return await prisma.allocation.findMany({
+    where: { stxId },
+    orderBy: { createdAt: 'desc' }
+  });
 }
 
 module.exports = {

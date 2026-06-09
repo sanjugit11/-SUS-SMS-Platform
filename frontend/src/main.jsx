@@ -2,6 +2,7 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useR
 import { createRoot } from "react-dom/client";
 import { ethers } from "ethers";
 import {
+  AlertTriangle,
   ArrowDownToLine,
   ArrowRightLeft,
   Banknote,
@@ -9,17 +10,21 @@ import {
   CircleDollarSign,
   Clock3,
   Database,
+  Fingerprint,
   Landmark,
   LockKeyhole,
   Network,
+  PowerOff,
   RefreshCcw,
   ShieldCheck,
+  UserCheck,
   Wallet
 } from "lucide-react";
 import "./styles.css";
 
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:4000";
-const DEMO_USER = "demo-user";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_BASE || "http://localhost:4000";
+const SOURCE_CHAIN = "hoodi";
+const DESTINATION_CHAIN = "base-sepolia";
 
 const CHAIN_PARAMS = {
   hoodi: {
@@ -27,20 +32,20 @@ const CHAIN_PARAMS = {
     chainName: "Hoodi",
     nativeCurrency: { name: "Hoodi Ether", symbol: "ETH", decimals: 18 },
     rpcUrls: ["https://rpc.hoodi.ethpandaops.io"],
-    blockExplorerUrls: ["https://hoodi.ethpandaops.io"]
+    blockExplorerUrls: ["https://explorer.hoodi.ethpandaops.io"]
   },
-  "arbitrum-sepolia": {
-    chainId: "0x66eee",
-    chainName: "Arbitrum Sepolia",
-    nativeCurrency: { name: "Arbitrum Sepolia Ether", symbol: "ETH", decimals: 18 },
-    rpcUrls: ["https://sepolia-rollup.arbitrum.io/rpc"],
-    blockExplorerUrls: ["https://sepolia.arbiscan.io"]
+  "base-sepolia": {
+    chainId: "0x14a34",
+    chainName: "Base Sepolia",
+    nativeCurrency: { name: "Base Sepolia Ether", symbol: "ETH", decimals: 18 },
+    rpcUrls: ["https://sepolia.base.org"],
+    blockExplorerUrls: ["https://sepolia.basescan.org"]
   }
 };
 
 const FALLBACK_CHAINS = [
-  { id: "hoodi", name: "Hoodi", chainId: 560048, role: "Destination primary", endOfLife: "2028-09" },
-  { id: "arbitrum-sepolia", name: "Arbitrum Sepolia", chainId: 421614, role: "Deposit / destination alternative", endOfLife: "2026-09" }
+  { id: "hoodi", name: "Hoodi", chainId: 560048, role: "Primary L1 testnet", endOfLife: "2027+" },
+  { id: "base-sepolia", name: "Base Sepolia", chainId: 84532, role: "Secondary L2 testnet", endOfLife: "Stable" }
 ];
 
 const FALLBACK_STABLECOINS = [
@@ -52,27 +57,28 @@ const FALLBACK_STABLECOINS = [
 
 const initialState = {
   wallet: "",
+  stxProfile: null,
   connectedChainId: "",
   chains: FALLBACK_CHAINS,
   stablecoins: FALLBACK_STABLECOINS,
-  account: { userId: DEMO_USER, principalStablecoin: "USDC", susBalance: 100000, depositChain: "hoodi" },
-  depositChain: "hoodi",
+  account: { stxId: "", principalStablecoin: "USDC", susBalance: 0, depositChain: "hoodi" },
+  depositChain: SOURCE_CHAIN,
   principalStablecoin: "USDC",
   depositAmount: 25000,
   allocationAmount: 50000,
   outputStablecoin: "DAI",
   allocations: [],
   destinationBalances: [],
+  adminPending: [],
+  adminActions: [],
+  securityAlerts: [],
+  killSwitch: {},
   loading: false,
   error: "",
   lastUpdated: ""
 };
 
 const PlatformContext = createContext(null);
-
-function otherChain(chainId) {
-  return chainId === "hoodi" ? "arbitrum-sepolia" : "hoodi";
-}
 
 function normalizeCoin(coin) {
   const palette = { USDC: "#2563eb", USDT: "#059669", DAI: "#d97706", EURC: "#7c3aed" };
@@ -81,10 +87,6 @@ function normalizeCoin(coin) {
 
 function chainName(chains, chainId) {
   return chains.find((chain) => chain.id === chainId)?.name || chainId;
-}
-
-function userIdFor(wallet) {
-  return wallet || DEMO_USER;
 }
 
 async function api(path, options) {
@@ -107,6 +109,8 @@ function reducer(state, action) {
         error: "",
         lastUpdated: new Date().toLocaleTimeString()
       };
+    case "admin_hydrate":
+      return { ...state, ...action.payload };
     case "loading":
       return { ...state, loading: action.value };
     case "error":
@@ -115,18 +119,22 @@ function reducer(state, action) {
       return { ...state, wallet: action.wallet, connectedChainId: action.connectedChainId || state.connectedChainId };
     case "chain":
       return { ...state, connectedChainId: action.connectedChainId };
+    case "profile":
+      return { ...state, stxProfile: action.profile };
     case "field":
       return { ...state, [action.name]: action.value };
     case "account":
       return {
         ...state,
         account: action.account,
-        depositChain: action.account.depositChain,
-        principalStablecoin: action.account.principalStablecoin,
+        depositChain: action.account.depositChain || state.depositChain,
+        principalStablecoin: action.account.principalStablecoin || state.principalStablecoin,
         allocationAmount: Math.min(Number(state.allocationAmount || 0), action.account.susBalance)
       };
     case "allocation":
       return { ...state, allocations: [action.allocation, ...state.allocations.filter((item) => item.id !== action.allocation.id)] };
+    case "logout":
+      return { ...initialState };
     default:
       return state;
   }
@@ -134,23 +142,49 @@ function reducer(state, action) {
 
 function PlatformProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const userId = userIdFor(state.wallet);
+  const stxId = state.stxProfile?.stxId;
+
+  const refreshAdmin = useCallback(async () => {
+    try {
+      const [pending, status] = await Promise.all([
+        api("/api/admin/pending"),
+        api("/api/security/status")
+      ]);
+      dispatch({ type: "admin_hydrate", payload: {
+        adminPending: pending.pendingOperations,
+        adminActions: pending.adminActions,
+        securityAlerts: status.alerts,
+        killSwitch: status.killSwitch
+      }});
+    } catch (e) {
+      console.warn("Admin fetch failed", e);
+    }
+  }, []);
 
   const refresh = useCallback(async () => {
     try {
-      const query = `userId=${encodeURIComponent(userId)}`;
-      const [chains, stablecoins, account, allocations, destinationBalances] = await Promise.all([
-        api("/api/supported/chains"),
-        api("/api/supported/stablecoins"),
-        api(`/api/sus/balance?${query}`),
-        api(`/api/sms/history?${query}`),
-        api(`/api/sms/balances?${query}`)
-      ]);
+      const p1 = api("/api/supported/chains");
+      const p2 = api("/api/supported/stablecoins");
+      let chains, stablecoins, account = state.account, allocations = [], destinationBalances = [];
+      
+      if (stxId) {
+        const query = `stxId=${encodeURIComponent(stxId)}`;
+        [chains, stablecoins, account, allocations, destinationBalances] = await Promise.all([
+          p1, p2,
+          api(`/api/sus/balance?${query}`),
+          api(`/api/sms/history?${query}`),
+          api(`/api/sms/balances?${query}`)
+        ]);
+      } else {
+        [chains, stablecoins] = await Promise.all([p1, p2]);
+      }
+      
       dispatch({ type: "hydrate", payload: { chains, stablecoins, account, allocations, destinationBalances } });
+      await refreshAdmin();
     } catch (error) {
       dispatch({ type: "error", message: error.message });
     }
-  }, [userId]);
+  }, [stxId, state.account, refreshAdmin]);
 
   useEffect(() => {
     refresh();
@@ -159,7 +193,7 @@ function PlatformProvider({ children }) {
   useEffect(() => {
     const hasOpenAllocation = state.allocations.some((allocation) => allocation.status !== "completed");
     if (!hasOpenAllocation) return undefined;
-    const interval = window.setInterval(refresh, 900);
+    const interval = window.setInterval(refresh, 1500);
     return () => window.clearInterval(interval);
   }, [refresh, state.allocations]);
 
@@ -169,10 +203,11 @@ function PlatformProvider({ children }) {
       const response = await api("/api/sus/deposit", {
         method: "POST",
         body: JSON.stringify({
-          userId,
+          stxId,
           stablecoin: state.principalStablecoin,
           amount: Number(state.depositAmount),
-          depositChain: state.depositChain
+          depositChain: state.depositChain,
+          walletSignature: "mock-signature"
         })
       });
       dispatch({ type: "account", account: response.account });
@@ -182,7 +217,27 @@ function PlatformProvider({ children }) {
     } finally {
       dispatch({ type: "loading", value: false });
     }
-  }, [refresh, state.depositAmount, state.depositChain, state.principalStablecoin, userId]);
+  }, [refresh, state.depositAmount, state.depositChain, state.principalStablecoin, stxId]);
+
+  const withdraw = useCallback(async () => {
+    dispatch({ type: "loading", value: true });
+    try {
+      const response = await api("/api/sus/withdraw", {
+        method: "POST",
+        body: JSON.stringify({
+          stxId,
+          amount: Number(state.depositAmount),
+          walletSignature: "mock-signature"
+        })
+      });
+      dispatch({ type: "account", account: response.account });
+      await refresh();
+    } catch (error) {
+      dispatch({ type: "error", message: error.message });
+    } finally {
+      dispatch({ type: "loading", value: false });
+    }
+  }, [refresh, state.depositAmount, stxId]);
 
   const allocate = useCallback(async () => {
     dispatch({ type: "loading", value: true });
@@ -190,10 +245,10 @@ function PlatformProvider({ children }) {
       const response = await api("/api/sms/allocate", {
         method: "POST",
         body: JSON.stringify({
-          userId,
+          stxId,
           amount: Number(state.allocationAmount),
           sourceChain: state.depositChain,
-          destChain: otherChain(state.depositChain),
+          destChain: DESTINATION_CHAIN,
           inputStablecoin: state.principalStablecoin,
           outputStablecoin: state.outputStablecoin
         })
@@ -205,9 +260,9 @@ function PlatformProvider({ children }) {
     } finally {
       dispatch({ type: "loading", value: false });
     }
-  }, [refresh, state.allocationAmount, state.depositChain, state.outputStablecoin, state.principalStablecoin, userId]);
+  }, [refresh, state.allocationAmount, state.depositChain, state.outputStablecoin, state.principalStablecoin, stxId]);
 
-  const value = useMemo(() => ({ allocate, deposit, dispatch, refresh, state, userId }), [allocate, deposit, refresh, state, userId]);
+  const value = useMemo(() => ({ allocate, deposit, withdraw, dispatch, refresh, refreshAdmin, state, stxId }), [allocate, deposit, withdraw, refresh, refreshAdmin, state, stxId]);
   return <PlatformContext.Provider value={value}>{children}</PlatformContext.Provider>;
 }
 
@@ -273,12 +328,16 @@ function WalletButton() {
 
   async function connect() {
     if (window.ethereum) {
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const accounts = await provider.send("eth_requestAccounts", []);
-      const network = await provider.getNetwork();
-      dispatch({ type: "wallet", wallet: accounts[0], connectedChainId: network.chainId.toString() });
+      try {
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const accounts = await provider.send("eth_requestAccounts", []);
+        const network = await provider.getNetwork();
+        dispatch({ type: "wallet", wallet: accounts[0], connectedChainId: network.chainId.toString() });
+      } catch (error) {
+        console.error("MetaMask connection error:", error);
+      }
     } else {
-      dispatch({ type: "wallet", wallet: "0xDemo6E4f9b11" });
+      alert("Please install MetaMask to connect your wallet.");
     }
   }
 
@@ -291,6 +350,7 @@ function WalletButton() {
 }
 
 function Header() {
+  const { dispatch, state } = usePlatform();
   return (
     <header className="topbar">
       <div className="brand-block">
@@ -302,59 +362,98 @@ function Header() {
       </div>
       <div className="wallet-cluster">
         <ChainSwitchButton chainId="hoodi" />
-        <ChainSwitchButton chainId="arbitrum-sepolia" />
+        <ChainSwitchButton chainId="base-sepolia" />
         <WalletButton />
+        {state.wallet && (
+          <button className="chain-button" onClick={() => dispatch({type: "logout"})}>
+            <PowerOff size={16} /> Logout
+          </button>
+        )}
       </div>
     </header>
   );
 }
 
-function HeroPanel() {
-  const { state } = usePlatform();
-  const destChain = otherChain(state.depositChain);
+function RegistrationPanel() {
+  const { state, dispatch } = usePlatform();
+  const [loading, setLoading] = React.useState(false);
+
+  const register = async () => {
+    setLoading(true);
+    try {
+      const res = await api("/api/stx/register", {
+        method: "POST",
+        body: JSON.stringify({
+          walletAddress: state.wallet,
+          biometricEnrolled: true,
+          passcode: "12345678",
+          totpCode: "123456",
+          signature: "mock-signature"
+        })
+      });
+      dispatch({ type: "profile", profile: res.user });
+    } catch(e) {
+      dispatch({ type: "error", message: e.message });
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
-    <section className="hero-panel">
-      <div className="hero-copy">
-        <span className="eyebrow">Hoodi and Arbitrum Sepolia</span>
-        <h2>ACX moves stablecoin intent while SUS keeps the principal ledger clear.</h2>
-        <p>
-          Connect MetaMask, deposit principal stablecoin on Hoodi or Arbitrum Sepolia, then allocate output
-          liquidity to the opposite chain with live status updates from the backend engine.
-        </p>
+    <div className="auth-overlay">
+      <div className="auth-modal">
+        <Fingerprint size={48} className="auth-icon" />
+        <h2>STX Authentication</h2>
+        <p>Your wallet is connected, but you need to register for an STX-ID to use the platform.</p>
+        <ul className="auth-checklist">
+          <li><CheckCircle2 size={16}/> Wallet connection verified</li>
+          <li><AlertTriangle size={16}/> Biometric enrollment required</li>
+          <li><AlertTriangle size={16}/> Passcode & TOTP required</li>
+        </ul>
+        {state.error ? <div className="notice" style={{marginBottom: "15px"}}>{state.error}</div> : null}
+        <button className="primary-action dark" onClick={register} disabled={loading}>
+          {loading ? "Registering..." : "Complete Registration"}
+        </button>
       </div>
-      <div className="chain-visual" aria-label="Current ACX allocation route">
-        <div className="chain-node hoodi-node">
-          <Landmark size={22} />
-          <strong>{chainName(state.chains, state.depositChain)}</strong>
-          <span>SUS principal balance</span>
-        </div>
-        <div className="flow-line">
-          <span>ACX</span>
-        </div>
-        <div className="chain-node arb-node">
-          <Network size={22} />
-          <strong>{chainName(state.chains, destChain)}</strong>
-          <span>Destination balances</span>
-        </div>
-      </div>
-    </section>
+    </div>
   );
 }
 
+
 function Dashboard() {
-  const { allocate, deposit, dispatch, refresh, state } = usePlatform();
-  const destChain = otherChain(state.depositChain);
+  const { allocate, deposit, withdraw, dispatch, refresh, state } = usePlatform();
+  const destChain = DESTINATION_CHAIN;
   const openCount = state.allocations.filter((allocation) => allocation.status !== "completed").length;
+
+  if (!state.wallet) {
+    return (
+      <main>
+        <div className="hero-panel" style={{textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center"}}>
+          <ShieldCheck size={64} style={{color: "#2563eb", marginBottom: "1rem"}}/>
+          <h2>Welcome to SUS-SMS Platform</h2>
+          <p>Please connect your wallet to proceed.</p>
+        </div>
+      </main>
+    );
+  }
+
+  if (state.wallet && !state.stxProfile) {
+    return (
+      <main>
+        <RegistrationPanel />
+      </main>
+    );
+  }
 
   return (
     <main>
-      <HeroPanel />
       {state.error ? <div className="notice">{state.error}</div> : null}
+      
       <section className="stats-grid">
+        <Stat icon={UserCheck} label="STX ID" value={state.stxProfile.stxId} detail="Authenticated" />
         <Stat icon={CircleDollarSign} label="SUS balance" value={`${formatAmount(state.account.susBalance)} ${state.account.principalStablecoin}`} detail={chainName(state.chains, state.account.depositChain)} />
         <Stat icon={ArrowRightLeft} label="Destination" value={chainName(state.chains, destChain)} detail={`${state.principalStablecoin} to ${state.outputStablecoin}`} />
         <Stat icon={Clock3} label="Live allocations" value={openCount} detail={state.lastUpdated ? `Updated ${state.lastUpdated}` : "Waiting for API"} />
-        <Stat icon={ShieldCheck} label="Exchange rate" value="1:1" detail="Backend ACX quote" />
       </section>
 
       <section className="workspace-grid">
@@ -369,7 +468,7 @@ function Dashboard() {
           <label>
             Deposit chain
             <select value={state.depositChain} onChange={(event) => dispatch({ type: "field", name: "depositChain", value: event.target.value })}>
-              {state.chains.map((chain) => <option value={chain.id} key={chain.id}>{chain.name}</option>)}
+              {state.chains.filter((chain) => chain.id === SOURCE_CHAIN).map((chain) => <option value={chain.id} key={chain.id}>{chain.name}</option>)}
             </select>
           </label>
           <label>
@@ -379,13 +478,17 @@ function Dashboard() {
             </select>
           </label>
           <label>
-            Deposit amount
+            Amount
             <input type="number" min="0" value={state.depositAmount} onChange={(event) => dispatch({ type: "field", name: "depositAmount", value: event.target.value })} />
           </label>
-          <button className="primary-action" disabled={state.loading} onClick={deposit}>
-            <ArrowDownToLine size={18} />
-            Deposit to SUS
-          </button>
+          <div style={{display: 'flex', gap: '10px'}}>
+            <button className="primary-action" disabled={state.loading} onClick={deposit} style={{flex: 1}}>
+              <ArrowDownToLine size={18} /> Deposit
+            </button>
+            <button className="primary-action outline" disabled={state.loading} onClick={withdraw} style={{flex: 1, backgroundColor: 'transparent', border: '1px solid #ccc', color: '#333'}}>
+              Withdraw
+            </button>
+          </div>
         </div>
 
         <div className="panel accent-panel">
@@ -403,8 +506,8 @@ function Dashboard() {
           </div>
           <label>
             Destination chain
-            <select value={destChain} onChange={(event) => dispatch({ type: "field", name: "depositChain", value: otherChain(event.target.value) })}>
-              {state.chains.map((chain) => <option value={chain.id} key={chain.id}>{chain.name}</option>)}
+            <select value={destChain} disabled>
+              {state.chains.filter((chain) => chain.id === DESTINATION_CHAIN).map((chain) => <option value={chain.id} key={chain.id}>{chain.name}</option>)}
             </select>
           </label>
           <label>
@@ -424,11 +527,19 @@ function Dashboard() {
         </div>
       </section>
 
-      <section className="lower-grid">
+      <section className="lower-grid" style={{gridTemplateColumns: "1fr 1fr"}}>
         <AllocationHistory />
         <DestinationBalances />
-        <SupportedAssets />
       </section>
+      
+      <hr style={{margin: '40px 0', borderColor: '#eee'}} />
+      <h2 style={{marginBottom: '20px'}}>Super Admin Controls</h2>
+      
+      <section className="lower-grid" style={{gridTemplateColumns: "1fr 1fr"}}>
+        <AdminDashboard />
+        <SecurityDashboard />
+      </section>
+
       <button className="refresh-button" onClick={refresh}>
         <RefreshCcw size={16} />
         Refresh
@@ -437,10 +548,107 @@ function Dashboard() {
   );
 }
 
+function AdminDashboard() {
+  const { state, refreshAdmin } = usePlatform();
+  const pending = state.adminPending || [];
+  
+  const approve = async (id) => {
+    try {
+      await api("/api/admin/approve", {
+        method: "POST",
+        body: JSON.stringify({
+          adminWallet: "0xAdmin000000000000000000000000000000000001",
+          operationId: id,
+          signature: "mock-sig"
+        })
+      });
+      refreshAdmin();
+    } catch(e) { alert(e.message) }
+  };
+
+  const proposePause = async () => {
+    try {
+      await api("/api/security/kill-switch", {
+        method: "POST",
+        body: JSON.stringify({
+          adminWallet: "0xAdmin000000000000000000000000000000000001",
+          switchType: "platformPause",
+          action: "activate",
+          signature: "mock-signature"
+        })
+      });
+      refreshAdmin();
+    } catch(e) { alert(e.message) }
+  }
+
+  return (
+    <section className="panel">
+      <div className="panel-heading">
+        <div>
+          <p>Admin Dashboard</p>
+          <h3>Pending 3-of-3 approvals</h3>
+        </div>
+        <ShieldCheck size={20} />
+      </div>
+      <div className="table-list" style={{maxHeight: "300px", overflowY: "auto"}}>
+        {pending.length === 0 ? <div className="empty-state">No pending operations.</div> : null}
+        {pending.map(op => (
+          <article className="allocation-row" key={op.id}>
+            <div>
+              <strong>{op.operationType}</strong>
+            </div>
+            <div>{op.approvals.length} / 3 Approvals</div>
+            <button className="primary-action dark" style={{padding: '5px 10px', width: 'auto'}} onClick={() => approve(op.id)}>Approve</button>
+          </article>
+        ))}
+      </div>
+      <div style={{marginTop: '15px'}}>
+        <button className="primary-action" style={{background: '#ef4444'}} onClick={proposePause}>
+          <PowerOff size={16}/> Activate Kill Switch (Pause)
+        </button>
+      </div>
+    </section>
+  );
+}
+
+function SecurityDashboard() {
+  const { state } = usePlatform();
+  const alerts = state.securityAlerts || [];
+  return (
+    <section className="panel wide-panel">
+      <div className="panel-heading">
+        <div>
+          <p>Security Dashboard</p>
+          <h3>Alert history & Auto-shutdown</h3>
+        </div>
+        <AlertTriangle size={20} />
+      </div>
+      <div style={{padding: '10px 0', marginBottom: '10px', borderBottom: '1px solid #eee'}}>
+        <strong>Kill Switch Status: </strong> 
+        <span className={`status-pill ${state.killSwitch?.platformPause ? 'error' : 'completed'}`}>
+          {state.killSwitch?.platformPause ? 'PAUSED' : 'ACTIVE'}
+        </span>
+      </div>
+      <div className="table-list" style={{maxHeight: "250px", overflowY: "auto"}}>
+        {alerts.length === 0 ? <div className="empty-state">No alerts.</div> : null}
+        {alerts.map(a => (
+          <article className="allocation-row" key={a.id}>
+            <div>
+              <span style={{color: a.level === 'critical' ? 'red' : 'inherit'}}>{a.message}</span>
+            </div>
+            <small>{new Date(a.createdAt).toLocaleString()}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+
 function AllocationHistory() {
   const { state } = usePlatform();
   return (
-    <section className="panel wide-panel">
+    <section className="panel">
       <div className="panel-heading">
         <div>
           <p>Allocation History</p>
@@ -448,8 +656,8 @@ function AllocationHistory() {
         </div>
         <Database size={20} />
       </div>
-      <div className="table-list">
-        {state.allocations.length === 0 ? <div className="empty-state">No allocations for this wallet yet.</div> : null}
+      <div className="table-list" style={{maxHeight: "300px", overflowY: "auto"}}>
+        {state.allocations.length === 0 ? <div className="empty-state">No allocations yet.</div> : null}
         {state.allocations.map((item) => (
           <article className="allocation-row" key={item.id}>
             <div>
@@ -458,7 +666,6 @@ function AllocationHistory() {
             </div>
             <div>{formatAmount(item.amount)} {item.inputStablecoin} to {item.outputStablecoin}</div>
             <div className={`status-pill ${item.status}`}>{item.status}</div>
-            <code>{shortHash(item.txHash)}</code>
           </article>
         ))}
       </div>
@@ -496,34 +703,6 @@ function DestinationBalances() {
           ))}
         </div>
       ))}
-    </section>
-  );
-}
-
-function SupportedAssets() {
-  const { state } = usePlatform();
-  return (
-    <section className="panel">
-      <div className="panel-heading">
-        <div>
-          <p>Supported Assets</p>
-          <h3>Chains and stablecoins</h3>
-        </div>
-        <Network size={20} />
-      </div>
-      <div className="asset-list">
-        {state.chains.map((chain) => (
-          <article className="asset-row" key={chain.id}>
-            <span>{chain.name}</span>
-            <small>{chain.role} | EOL {chain.endOfLife}</small>
-          </article>
-        ))}
-      </div>
-      <div className="coin-grid">
-        {state.stablecoins.map((coin) => (
-          <span className="coin-pill" key={coin.symbol} style={{ "--coin": coin.color }}>{coin.symbol}</span>
-        ))}
-      </div>
     </section>
   );
 }

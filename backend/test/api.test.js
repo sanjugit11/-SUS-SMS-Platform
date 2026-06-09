@@ -19,7 +19,7 @@ describe("SUS/SMS API", () => {
     expect(health.status).toBe(200);
     expect(health.body.ok).toBe(true);
     expect(chains.status).toBe(200);
-    expect(chains.body.map((chain) => chain.id)).toEqual(expect.arrayContaining(["hoodi", "arbitrum-sepolia"]));
+    expect(chains.body.map((chain) => chain.id)).toEqual(expect.arrayContaining(["hoodi", "base-sepolia"]));
   });
 
   it("lists supported stablecoins", async () => {
@@ -52,14 +52,14 @@ describe("SUS/SMS API", () => {
       userId: "alice",
       stablecoin: "USDC",
       amount: 400,
-      depositChain: "arbitrum-sepolia"
+      depositChain: "hoodi"
     });
 
     const res = await request(app).get("/api/sus/balance").query({ userId: "alice" });
 
     expect(res.status).toBe(200);
     expect(res.body.susBalance).toBe(400);
-    expect(res.body.depositChain).toBe("arbitrum-sepolia");
+    expect(res.body.depositChain).toBe("hoodi");
   });
 
   it("accepts allocations and exposes allocation history", async () => {
@@ -75,7 +75,7 @@ describe("SUS/SMS API", () => {
       userId: "alice",
       amount: 500,
       sourceChain: "hoodi",
-      destChain: "arbitrum-sepolia",
+      destChain: "base-sepolia",
       inputStablecoin: "USDC",
       outputStablecoin: "DAI"
     });
@@ -99,7 +99,7 @@ describe("SUS/SMS API", () => {
       userId: "alice",
       amount: 500,
       sourceChain: "hoodi",
-      destChain: "arbitrum-sepolia",
+      destChain: "base-sepolia",
       inputStablecoin: "USDC",
       outputStablecoin: "DAI"
     });
@@ -110,14 +110,14 @@ describe("SUS/SMS API", () => {
 
     expect(status.body.status).toBe("completed");
     expect(balances.body).toContainEqual(expect.objectContaining({
-      chainId: "arbitrum-sepolia",
+      chainId: "base-sepolia",
       stablecoin: "DAI",
       balance: 500
     }));
   });
 
-  it("rejects same-chain and over-balance allocations", async () => {
-    const sameChain = await request(app).post("/api/sms/allocate").send({
+  it("rejects invalid routes and over-balance allocations", async () => {
+    const invalidRoute = await request(app).post("/api/sms/allocate").send({
       userId: "demo-user",
       amount: 10,
       sourceChain: "hoodi",
@@ -129,12 +129,12 @@ describe("SUS/SMS API", () => {
       userId: "demo-user",
       amount: 200000,
       sourceChain: "hoodi",
-      destChain: "arbitrum-sepolia",
+      destChain: "base-sepolia",
       inputStablecoin: "USDC",
       outputStablecoin: "DAI"
     });
 
-    expect(sameChain.status).toBe(400);
+    expect(invalidRoute.status).toBe(400);
     expect(overBalance.status).toBe(400);
     expect(overBalance.body.error).toBe("Insufficient SUS balance");
   });

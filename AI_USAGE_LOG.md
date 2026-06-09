@@ -15,4 +15,4 @@ Use this file in the submission videos to document required AI assistance.
 
 ## Network choice
 
-Primary destination chain is Hoodi. If Arbitrum Sepolia is used as the destination alternative, document the Hoodi blocker here with dates, RPC/faucet evidence, and mitigation.
+Primary chain is Hoodi for SUS deposits. SMS is deployed to Base Sepolia as the destination chain. If Hoodi deployment is blocked and Base Sepolia is used as a fallback for SUS, document the Hoodi blocker here with dates, RPC/faucet evidence, and mitigation.
