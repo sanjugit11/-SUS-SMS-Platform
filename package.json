@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "^5.0.2",
-    "@prisma/client": "^5.22.0",
+    "@prisma/client": "^6.19.3",
     "@vitejs/plugin-react": "^4.3.4",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
@@ -24,7 +24,6 @@
     "express-rate-limit": "^7.5.0",
     "helmet": "^8.0.0",
     "lucide-react": "^0.468.0",
-    "prisma": "^5.22.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "zod": "^3.24.1"
@@ -36,6 +35,7 @@
     "chai": "^4.5.0",
     "hardhat": "^2.22.17",
     "jsdom": "^25.0.1",
+    "prisma": "^6.19.3",
     "solidity-coverage": "^0.8.17",
     "supertest": "^7.0.0",
     "vitest": "^2.1.8"

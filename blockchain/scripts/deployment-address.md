@@ -1,0 +1,4 @@
+SUSCore deployed
+network: hoodi
+address: 0xDd5a1A84588EE7Ebb8752D54F9a299F26A3430f8
+owner: 0x1034aad10eF61534EA4Df59cd040b3e4418C5E78
